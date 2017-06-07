@@ -58,7 +58,7 @@ class TimersDashboard extends React.Component {
 
     deleteTimer = (attrs) => {
         this.setState({
-            timer: this.state.timers.filter((timer) => {
+            timers: this.state.timers.filter((timer) => {
               if (timer.id === attrs.id) {
                   return false;
               } else {
