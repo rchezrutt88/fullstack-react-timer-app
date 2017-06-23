@@ -183,7 +183,7 @@ class EditableTimerList extends React.Component {
                 elapsed={timer.elapsed}
                 runningSince={timer.runningSince}
                 onFormSubmit={this.props.onFormSubmit}
-                onDelete={this.props.onDelete}
+                onTrashClick={this.props.onTrashClick}
                 onStartClick={this.props.onStartClick}
                 onStopClick={this.props.onStopClick}
             />
@@ -205,10 +205,6 @@ class EditableTimer extends React.Component {
 
     handleEditClick = () => {
         this.openForm();
-    };
-
-    handleDeleteClick = (timer) => {
-        this.props.onDelete(timer);
     };
 
     handleFormClose = () => {
@@ -252,7 +248,7 @@ class EditableTimer extends React.Component {
                     elapsed={this.props.elapsed}
                     runningSince={this.props.runningSince}
                     onEditClick={this.handleEditClick}
-                    onTrashClick={this.props.handleDeleteClick}
+                    onTrashClick={this.props.onTrashClick}
                     onStartClick={this.props.onStartClick}
                     onStopClick={this.props.onStopClick}
                 />
@@ -262,6 +258,13 @@ class EditableTimer extends React.Component {
 }
 
 class Timer extends React.Component {
+    componentDidMount() {
+        this.forceUpdateInterval = setInterval(() => this.forceUpdate(), 50);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.forceUpdateInterval);
+    }
 
     handleStartClick = () => {
         this.props.onStartClick(this.props.id);
@@ -271,22 +274,14 @@ class Timer extends React.Component {
         this.props.onStopClick(this.props.id);
     };
 
-    handleDelete = () => {
-        this.props.onTrashClick({
-            id: this.props.id
-        });
+    handleTrashClick = () => {
+        this.props.onTrashClick(this.props.id);
     };
 
-    componentDidMount() {
-        this.forceUpdateInterval = setInterval(() => this.forceUpdate(), 50);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.forceUpdateInterval);
-    }
-
     render() {
-        const elapsedString = helpers.renderElapsedString(this.props.elapsed, this.props.runningSince);
+        const elapsedString = helpers.renderElapsedString(
+            this.props.elapsed, this.props.runningSince
+        );
         return (
             <div className='ui centered card'>
                 <div className='content'>
@@ -302,14 +297,17 @@ class Timer extends React.Component {
                         </h2>
                     </div>
                     <div className='extra content'>
-            <span className='right floated edit icon'>
-              <a><i className='edit icon'
-                    onClick={this.props.onEditClick}
-              /></a>
+            <span
+                className='right floated edit icon'
+                onClick={this.props.onEditClick}
+            >
+              <i className='edit icon' />
             </span>
-                        <span className='right floated trash icon'>
-              <a><i className='trash icon'
-                    onClick={this.handleDelete}/></a>
+                        <span
+                            className='right floated trash icon'
+                            onClick={this.handleTrashClick}
+                        >
+              <i className='trash icon' />
             </span>
                     </div>
                 </div>
